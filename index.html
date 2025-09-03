@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/program/refs/heads/main/favicon-masjid.png">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jadwal Sholat Surakarta dan Sekitarnya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Gaya CSS dari skrip sebelumnya (dipertahankan) */
+        :root {
+            --color-primary: #82A2B2;
+            --color-secondary: #B1C4D4;
+            --color-accent: #B2D8D4;
+            --color-background-1: #1A1A2E;
+            --color-background-2: #202E4F;
+            --color-text: #EAEAEA;
+            --color-glass-card: rgba(30, 45, 60, 0.7);
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-shadow: rgba(0, 0, 0, 0.3);
+            --color-highlight-bg: #415A77;
+            --color-highlight-text: #EAEAEA;
+        }
+
+        body.day-theme {
+            --color-primary: #526D82;
+            --color-secondary: #9DB2BF;
+            --color-accent: #3795BD;
+            --color-background-1: #EAEAEA;
+            --color-background-2: #DBE7F0;
+            --color-text: #27374D;
+            --color-glass-card: rgba(255, 255, 255, 0.7);
+            --color-border: rgba(255, 255, 255, 0.3);
+            --color-shadow: rgba(0, 0, 0, 0.1);
+            --color-highlight-bg: #89D9F8;
+            --color-highlight-text: #27374D;
+        }
+
+        body.morning-theme {
+            --color-primary: #FFB347;
+            --color-secondary: #FFDDA1;
+            --color-accent: #FF5C5C;
+            --color-background-1: #FFFAF0;
+            --color-background-2: #FFF4E6;
+            --color-text: #694C2F;
+            --color-glass-card: rgba(255, 255, 255, 0.8);
+            --color-border: rgba(255, 255, 255, 0.4);
+            --color-shadow: rgba(0, 0, 0, 0.15);
+            --color-highlight-bg: #F8D989;
+            --color-highlight-text: #694C2F;
+        }
+
+        body.sunset-theme {
+            --color-primary: #8E3253;
+            --color-secondary: #C85F6B;
+            --color-accent: #F4A261;
+            --color-background-1: #381D2A;
+            --color-background-2: #2A171D;
+            --color-text: #FBEFEF;
+            --color-glass-card: rgba(45, 30, 40, 0.7);
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-shadow: rgba(0, 0, 0, 0.4);
+            --color-highlight-bg: #B5446E;
+            --color-highlight-text: #FBEFEF;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--color-background-1), var(--color-background-2));
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--color-glass-card);
+            border-radius: 25px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 8px 32px 0 var(--color-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-secondary);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-shadow: 1px 1px 2px var(--color-shadow);
+        }
+
+        .location {
+            font-size: 1rem;
+            color: var(--color-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Gaya baru untuk keterangan update */
+        .update-info {
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        .current-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .date-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .time-display {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--color-text);
+            text-shadow: 2px 2px 4px var(--color-shadow);
+        }
+
+        .countdown-display {
+            font-size: 1rem;
+            color: var(--color-text);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .countdown-display span {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .prayer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem auto 0 auto;
+        }
+
+        .prayer-table tbody {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .prayer-table tbody tr {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px var(--color-shadow);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.5s ease, border-color 0.5s ease;
+            display: flex;
+            width: 100%;
+        }
+
+        .prayer-table tbody tr:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px var(--color-shadow);
+        }
+
+        .prayer-table td {
+            padding: 1.2rem;
+            font-weight: 600;
+            color: var(--color-text);
+            border: none;
+            background: transparent;
+            flex: 1;
+        }
+
+        .prayer-table tbody tr.highlight {
+            background: var(--color-highlight-bg);
+            border-color: var(--color-highlight-bg);
+            color: var(--color-highlight-text);
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--color-highlight-bg);
+        }
+
+        .prayer-table tbody tr.highlight .prayer-icon {
+            fill: var(--color-highlight-text);
+            stroke: var(--color-highlight-text);
+        }
+
+        .prayer-table tbody tr.highlight td:last-child {
+            color: var(--color-highlight-text);
+        }
+
+        .prayer-table tbody tr td:first-child {
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .prayer-table tbody tr td:last-child {
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            text-align: right;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.3rem;
+            color: var(--color-primary);
+        }
+
+        .prayer-icon {
+            width: 32px;
+            height: 32px;
+            fill: var(--color-primary);
+            stroke: var(--color-primary);
+            stroke-width: 1.5;
+            transition: transform 0.3s ease, fill 0.5s ease, stroke 0.5s ease;
+        }
+
+        .prayer-table tr:hover .prayer-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .footer {
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            margin-top: 1.5rem;
+        }
+        
+        /* Tambahan gaya untuk link di footer */
+        .footer a {
+            color: var(--color-secondary); /* Gunakan warna teks sekunder untuk link */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--color-primary); /* Ubah warna saat hover */
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .time-display {
+                font-size: 2.5rem;
+            }
+            .prayer-table td {
+                padding: 1rem 0.8rem;
+            }
+            .prayer-table tbody tr td:first-child {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .prayer-table tbody tr td:last-child {
+                text-align: center;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>Jadwal Sholat</h1>
+            <p class="location">Surakarta dan Sekitarnya</p>
+            <p class="update-info">Update Data Periode 3 September - 1 Oktober 2025</p>
+        </div>
+
+        <div class="current-info">
+            <div class="time-display" id="realtime-clock"></div>
+            <div class="date-display" id="selected-date"></div>
+            <div class="countdown-display" id="countdown-display"></div>
+        </div>
+
+        <table class="prayer-table">
+            <tbody id="prayer-times-body">
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="footer">
+        Sumber data: <a href="https://www.google.com/search?q=jadwal+sholat+surakarta&sca_esv=cbb70bed2ede2303&source=hp&ei=h3O4aP2VHbfl2roPwsm60Qo&iflsig=AOw8s4IAAAAAaLiBl65xcY2bS8gEhbMkpkoqLu-AqepT&oq=jadwal+sholat+sura&gs_lp=Egdnd3Mtd2l6IhJqYWR3YWwgc2hvbGF0IHN1cmEqAggAMgUQABiABDIFEAAYgAQyBRAAGIAEMggQABiABBixAzIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMgUQABiABEixN1DzCVj_MnABeACQAQCYAZUBoAGaC6oBBDE3LjG4AQHIAQD4AQGYAhOgAo0MqAIKwgIKEAAYAxjqAhiPAcICChAuGAMY6gIYjwHCAg4QABiABBixAxiDARiKBcICCxAAGIAEGLEDGIMBwgIFEC4YgATCAg4QABiABBixAxiDARjJA8ICCxAAGIAEGLEDGMkDwgIHEAAYgAQYCpgDEvEFSX97qI0H5uOSBwQxOC4xoAfTaLIHBDE3LjG4B_oLwgcGMi0xOC4xyAdk&sclient=gws-wiz">Kemenag Jakarta Pusat</a> - Tri W | Tewe TECH
+    </footer>
+
+    <script>
+        // Data jadwal sholat dalam format teks yang Anda berikan
+        const rawPrayerData = `
+Subuh
+Terbit
+Zuhur
+Asar
+Magrib
+Isya
+2 Sep
+04.19
+05.37
+11.37
+14.55
+17.36
+18.45
+3 Sep
+04.19
+05.37
+11.36
+14.55
+17.35
+18.45
+4 Sep
+04.19
+05.36
+11.36
+14.54
+17.35
+18.45
+5 Sep
+04.18
+05.36
+11.36
+14.53
+17.35
+18.45
+6 Sep
+04.18
+05.35
+11.35
+14.53
+17.35
+18.45
+7 Sep
+04.17
+05.35
+11.35
+14.52
+17.35
+18.44
+8 Sep
+04.17
+05.34
+11.35
+14.52
+17.35
+18.44
+9 Sep
+04.16
+05.34
+11.34
+14.51
+17.35
+18.44
+10 Sep
+04.16
+05.33
+11.34
+14.50
+17.34
+18.44
+11 Sep
+04.15
+05.33
+11.34
+14.50
+17.34
+18.44
+12 Sep
+04.15
+05.32
+11.33
+14.49
+17.34
+18.44
+13 Sep
+04.14
+05.31
+11.33
+14.48
+17.34
+18.43
+14 Sep
+04.13
+05.31
+11.32
+14.48
+17.34
+18.43
+15 Sep
+04.13
+05.30
+11.32
+14.47
+17.34
+18.43
+16 Sep
+04.12
+05.30
+11.32
+14.46
+17.34
+18.43
+17 Sep
+04.12
+05.29
+11.31
+14.46
+17.33
+18.43
+18 Sep
+04.11
+05.29
+11.31
+14.45
+17.33
+18.43
+19 Sep
+04.11 05.28 11.31 14.44 17.33 18.42
+20 Sep
+04.10
+05.27
+11.30
+14.43
+17.33
+18.42
+21 Sep
+04.10
+05.27
+11.30
+14.43
+17.33
+18.42
+22 Sep
+04.09
+05.26
+11.30
+14.42
+17.33
+18.42
+23 Sep
+04.08
+05.26
+11.29
+14.41
+17.33
+18.42
+24 Sep
+04.08
+05.25
+11.29
+14.40
+17.32
+18.42
+25 Sep
+04.07
+05.25
+11.29
+14.40
+17.32
+18.42
+26 Sep
+04.07
+05.24
+11.28
+14.39
+17.32
+18.41
+27 Sep
+04.06
+05.24
+11.28
+14.38
+17.32
+18.41
+28 Sep
+04.06
+05.23
+11.28
+14.37
+17.32
+18.41
+29 Sep
+04.05
+05.22
+11.27
+14.36
+17.32
+18.41
+30 Sep
+04.04
+05.22
+11.27
+14.35
+17.32
+18.41
+1 Okt
+04.04
+05.21
+11.27
+14.35
+17.31
+18.41
+        `;
+
+        // Fungsi untuk mengonversi data mentah menjadi objek JavaScript
+        const convertRawData = (data) => {
+            const prayerData = {};
+            // Menggunakan regex untuk memisahkan data berdasarkan spasi atau baris baru
+            const parts = data.trim().split(/\s+/);
+            
+            // Mencari indeks di mana data sholat dimulai (setelah baris header)
+            let startIndex = 0;
+            const headers = ['Subuh', 'Terbit', 'Zuhur', 'Asar', 'Magrib', 'Isya'];
+            for(let i = 0; i < parts.length; i++) {
+                if (parts[i].match(/^\d+$/) && i + 1 < parts.length && parts[i+1].match(/^[a-zA-Z]{3,4}$/)) {
+                    startIndex = i;
+                    break;
+                }
+            }
+            
+            // Memproses data mulai dari startIndex
+            for (let i = startIndex; i < parts.length; i += 8) {
+                const day = parts[i];
+                const monthName = parts[i + 1];
+                const subuh = parts[i + 2].replace('.', ':');
+                const terbit = parts[i + 3].replace('.', ':');
+                const zuhur = parts[i + 4].replace('.', ':');
+                const asar = parts[i + 5].replace('.', ':');
+                const magrib = parts[i + 6].replace('.', ':');
+                const isya = parts[i + 7].replace('.', ':');
+
+                const monthMap = {
+                    'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'Mei': '05', 'Jun': '06',
+                    'Jul': '07', 'Agu': '08', 'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12'
+                };
+                const month = monthMap[monthName] || new Date(`${monthName} 1, 2025`).getMonth() + 1;
+                
+                const key = `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}`;
+                
+                prayerData[key] = { subuh, terbit, zuhur, asar, magrib, isya };
+            }
+            
+            return prayerData;
+        };
+        
+        const prayerData = convertRawData(rawPrayerData);
+        
+        // --- Bagian JavaScript yang tidak berubah dari skrip asli ---
+        
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const prayerNameTranslations = {
+            subuh: "Subuh",
+            terbit: "Terbit",
+            zuhur: "Zuhur",
+            asar: "Asar",
+            magrib: "Maghrib",
+            isya: "Isya"
+        };
+        const prayerIcons = {
+            subuh: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M22 12h-2M4 12H2M12 22v-2M17 5L15.6 6.4M6.4 15.6L5 17M18.4 18.4L17 17M6.4 6.4L5 5"/><circle cx="12" cy="12" r="4"/></svg>`,
+            terbit: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M22 12h-2M4 12H2M12 22v-2M17 5L15.6 6.4M6.4 15.6L5 17M18.4 18.4L17 17M6.4 6.4L5 5"/><circle cx="12" cy="12" r="4"/></svg>`,
+            zuhur: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M22 12h-2M4 12H2M12 22v-2M17 5L15.6 6.4M6.4 15.6L5 17M18.4 18.4L17 17M6.4 6.4L5 5"/><circle cx="12" cy="12" r="4"/></svg>`,
+            asar: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M22 12h-2M4 12H2M12 22v-2M17 5L15.6 6.4M6.4 15.6L5 17M18.4 18.4L17 17M6.4 6.4L5 5"/><circle cx="12" cy="12" r="4"/></svg>`,
+            magrib: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z"></path></svg>`,
+            isya: `<svg class="prayer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z"></path></svg>`,
+        };
+        const formatDate = (date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return {
+                key: `${day}-${month}`,
+                display: `${dayNames[date.getDay()]}, ${day} ${monthNames[date.getMonth()]} ${year}`
+            };
+        };
+        const displayPrayerTimes = (dateKey) => {
+            const prayerTimesBody = document.getElementById('prayer-times-body');
+            const selectedDateElement = document.getElementById('selected-date');
+            const prayerTimes = prayerData[dateKey];
+            const parts = dateKey.split('-');
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = new Date().getFullYear();
+            const displayDate = new Date(year, month, day);
+            selectedDateElement.textContent = formatDate(displayDate).display;
+            if (prayerTimes) {
+                let html = '';
+                const prayers = ['subuh', 'terbit', 'zuhur', 'asar', 'magrib', 'isya'];
+                for (const prayer of prayers) {
+                    html += `<tr><td>${prayerIcons[prayer]} ${prayerNameTranslations[prayer]}</td><td>${prayerTimes[prayer]}</td></tr>`;
+                }
+                prayerTimesBody.innerHTML = html;
+                updateHighlight();
+            } else {
+                prayerTimesBody.innerHTML = `<tr><td colspan="2">Jadwal sholat untuk tanggal ini tidak tersedia.</td></tr>`;
+            }
+        };
+        const getNextPrayerTime = (now) => {
+            const initialDateKey = formatDate(now).key;
+            const prayerTimesToday = prayerData[initialDateKey];
+            if (!prayerTimesToday) return null;
+            const prayers = ['subuh', 'zuhur', 'asar', 'magrib', 'isya'];
+            for (const prayer of prayers) {
+                const [h, m] = prayerTimesToday[prayer].split(':');
+                const prayerTime = new Date();
+                prayerTime.setHours(h, m, 0, 0);
+                if (prayerTime.getTime() > now.getTime()) {
+                    return { name: prayer, time: prayerTime };
+                }
+            }
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            const tomorrowDateKey = formatDate(tomorrow).key;
+            const prayerTimesTomorrow = prayerData[tomorrowDateKey];
+            if (prayerTimesTomorrow) {
+                const [h, m] = prayerTimesTomorrow.subuh.split(':');
+                const prayerTime = new Date(tomorrow);
+                prayerTime.setHours(h, m, 0, 0);
+                return { name: 'subuh', time: prayerTime };
+            }
+            return null;
+        }
+        const updateTheme = () => {
+            const now = new Date();
+            const hour = now.getHours();
+            const body = document.body;
+            body.classList.remove('morning-theme', 'day-theme', 'sunset-theme');
+            if (hour >= 4 && hour <= 9) {
+                body.classList.add('morning-theme');
+            } else if (hour >= 10 && hour <= 15) {
+                body.classList.add('day-theme');
+            } else if (hour >= 16 && hour <= 18) {
+                body.classList.add('sunset-theme');
+            }
+        }
+        const updateClock = () => {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const clockElement = document.getElementById('realtime-clock');
+            clockElement.textContent = `${hours}:${minutes}:${seconds} WIB`;
+        };
+        const updateCountdown = () => {
+            const now = new Date();
+            const countdownElement = document.getElementById('countdown-display');
+            const nextPrayer = getNextPrayerTime(now);
+            if (!nextPrayer) {
+                countdownElement.textContent = "Jadwal sholat tidak tersedia.";
+                return;
+            }
+            const timeRemaining = nextPrayer.time.getTime() - now.getTime();
+            const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
+            const hours = Math.floor((timeRemaining / (1000 * 60 * 60)));
+            const seconds = Math.floor((timeRemaining / 1000) % 60);
+            let countdownText = `Menuju ${prayerNameTranslations[nextPrayer.name]} `;
+            if (hours > 0) {
+                countdownText += `<span>${hours}</span> jam `;
+            }
+            countdownText += `<span>${minutes}</span> menit <span>${seconds}</span> detik`;
+            countdownElement.innerHTML = countdownText;
+        };
+        const updateHighlight = () => {
+            const now = new Date();
+            const initialDateKey = formatDate(now).key;
+            const prayerTimesToday = prayerData[initialDateKey];
+            if (!prayerTimesToday) return;
+            const prayerRows = document.querySelectorAll('#prayer-times-body tr');
+            prayerRows.forEach(row => row.classList.remove('highlight'));
+            const prayers = ['subuh', 'terbit', 'zuhur', 'asar', 'magrib', 'isya'];
+            let highlightApplied = false;
+            for (const prayer of prayers) {
+                if (prayer === 'terbit') continue;
+                const [h, m] = prayerTimesToday[prayer].split(':');
+                const prayerTime = new Date();
+                prayerTime.setHours(h, m, 0, 0);
+                if (now.getTime() < prayerTime.getTime()) {
+                    const prayerName = prayerNameTranslations[prayer];
+                    const matchingRow = Array.from(prayerRows).find(row => row.textContent.includes(prayerName));
+                    if (matchingRow) {
+                        matchingRow.classList.add('highlight');
+                        highlightApplied = true;
+                    }
+                    break;
+                }
+            }
+            if (!highlightApplied) {
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                const tomorrowDateKey = formatDate(tomorrow).key;
+                if (prayerData[tomorrowDateKey]) {
+                    const prayerName = prayerNameTranslations['subuh'];
+                    const matchingRow = Array.from(prayerRows).find(row => row.textContent.includes(prayerName));
+                    if (matchingRow) {
+                        matchingRow.classList.add('highlight');
+                    }
+                }
+            }
+        }
+        setInterval(updateClock, 1000);
+        setInterval(updateCountdown, 1000);
+        setInterval(updateHighlight, 1000);
+        setInterval(updateTheme, 60000);
+        updateClock();
+        updateCountdown();
+        updateTheme();
+        const today = new Date();
+        const initialDateKey = formatDate(today).key;
+        displayPrayerTimes(initialDateKey);
+    </script>
+</body>
+</html>
